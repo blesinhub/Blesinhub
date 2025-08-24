@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blessing • Author & Storyteller</title>
+  <meta name="description" content="Blessing – author & storyteller. Read books, upload works, view gallery, chat, tips and support. Client‑side with local storage.">
+  <style>
+    :root{
+      --bg:#0f172a;           /* slate-900 */
+      --card:#111827;         /* gray-900 */
+      --muted:#94a3b8;        /* slate-400 */
+      --text:#e5e7eb;         /* gray-200 */
+      --brand:#7c3aed;        /* violet-600 */
+      --brand-2:#06b6d4;      /* cyan-500 */
+      --accent:#22c55e;       /* green-500 */
+      --warn:#f59e0b;         /* amber-500 */
+      --danger:#ef4444;       /* red-500 */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(120deg, #0b1022, #121a37 60%, #0b1022);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+    a{color:inherit}
+    .container{max-width:1200px;margin:0 auto;padding:16px}
+
+    /* NAV */
+    header{position:sticky;top:0;z-index:1000;background:rgba(11,16,34,.7);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:10px 8px}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.3px}
+    .brand .dot{width:10px;height:10px;border-radius:50%;background:conic-gradient(from 0deg, var(--brand), var(--brand-2));box-shadow:0 0 18px var(--brand)}
+    .menu a{margin:0 8px;padding:8px 10px;border-radius:10px;text-decoration:none;color:var(--muted)}
+    .menu a:hover{background:rgba(124,58,237,.12);color:#fff}
+    .tools{display:flex;gap:8px;align-items:center}
+    .btn{border:none;border-radius:999px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));color:white;box-shadow:0 8px 26px rgba(124,58,237,.35)}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.1);color:#fff}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:center;padding:36px 0; position:relative; overflow:hidden;}
+    @media(min-width:900px){.hero{grid-template-columns:1.2fr .9fr}}
+    .kicker{color:var(--muted);font-size:14px;letter-spacing:.2em;text-transform:uppercase}
+    .title{font-size:44px;line-height:1.1;margin:6px 0 10px}
+    .lead{color:#cbd5e1}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+    /* Round glowing profile + sparkles */
+    .profile-wrap{display:flex;justify-content:center}
+    .profile{width:230px;height:230px;border-radius:50%;overflow:hidden;position:relative;border:5px solid rgba(255,255,255,.15)}
+    .profile img{width:100%;height:100%;object-fit:cover;display:block}
+    .profile::before{content:"";position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,var(--brand),var(--brand-2),var(--brand));filter:blur(14px);opacity:.55;transition:.35s}
+    .profile:hover::before{opacity:1;filter:blur(10px)}
+    .halo{position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(60% 60% at 50% 50%, rgba(124,58,237,.35), transparent 60%);pointer-events:none}
+    /* sparkles circling */
+    .profile::after{
+      content:""; position:absolute; inset:-18px; border-radius:50%;
+      background:
+        radial-gradient(6px 6px at 80% 20%, rgba(255,255,255,.9), transparent 60%),
+        radial-gradient(4px 4px at 20% 80%, rgba(255,255,255,.8), transparent 60%),
+        radial-gradient(5px 5px at 50% 0%, rgba(255,255,255,.8), transparent 60%);
+      animation: spin 8s linear infinite;
+      opacity:.7; pointer-events:none;
+    }
+    @keyframes spin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    /* Animated students (SVG + GIF) */
+    .students{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.0));border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:900px){.students{grid-template-columns:1fr 1fr}}
+    .svg-student{width:100%;height:240px}
+    .gif-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .gif-student{width:100%;max-height:240px;object-fit:cover;border-radius:12px}
+    .floaty{position:absolute;inset:0;pointer-events:none}
+    .floaty span{position:absolute;width:14px;height:14px;border-radius:4px;background:linear-gradient(90deg,var(--brand),var(--brand-2));opacity:.55;animation:float 8s ease-in-out infinite}
+    .floaty span:nth-child(2){left:30%;top:10%;animation-duration:10s}
+    .floaty span:nth-child(3){left:70%;top:70%;animation-duration:12s}
+    @keyframes float{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(20deg)}100%{transform:translateY(0) rotate(0)}}
+
+    /* Floating books deco across hero */
+    .books-deco{position:absolute; inset:0; pointer-events:none;}
+    .book-icon{opacity:.18}
+    .book-icon:nth-child(odd){opacity:.25}
+    .updown{animation:updown 6s ease-in-out infinite}
+    .updown2{animation:updown 8s ease-in-out infinite}
+    @keyframes updown{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+
+    /* Sections */
+    section{margin:30px 0}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px}
+    h2{margin:0 0 12px; position:relative; display:inline-block; padding-right:36px}
+
+    /* Pencil underline animation for section titles */
+    h2::after{
+      content:"✏️"; position:absolute; right:-4px; top:0; font-size:20px; animation:draw 3s ease-in-out infinite;
+    }
+    @keyframes draw{0%{transform:translateX(-10px) rotate(-10deg)}50%{transform:translateX(0) rotate(0)}100%{transform:translateX(-10px) rotate(-10deg)}}
+
+    /* Quotes carousel */
+    .carousel{position:relative;overflow:hidden}
+    .slides{display:flex;transition:transform .6s ease}
+    .quote{min-width:100%;padding:16px;color:#e2e8f0;font-style:italic}
+
+    /* Books + Uploads */
+    .grid{display:grid;gap:12px}
+    .grid.cols-3{grid-template-columns:1fr}
+    @media(min-width:900px){.grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+    .book{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px}
+    .small{color:var(--muted);font-size:13px}
+    input[type="text"],input[type="file"],textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff}
+
+    /* Gallery */
+    .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media(min-width:800px){.gallery{grid-template-columns:repeat(4,1fr)}}
+    .thumb{position:relative;border-radius:12px;overflow:hidden}
+    .thumb img{width:100%;height:160px;object-fit:cover;display:block;transition:transform .35s}
+    .thumb:hover img{transform:scale(1.05)}
+    .thumb button{position:absolute;right:6px;top:6px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:8px;padding:6px;cursor:pointer}
+
+    /* Chat (local) */
+    .chatbox{height:280px;overflow:auto;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;background:rgba(0,0,0,.2)}
+    .msg{margin-bottom:8px}
+    .me{color:#a7f3d0}
+    .you{color:#93c5fd}
+
+    /* Tips list */
+    .tips{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:900px){.tips{grid-template-columns:repeat(2,1fr)}}
+    .tip{background:rgba(0,0,0,.25);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.06)}
+    .tip h4{margin:0 0 6px}
+
+    /* Footer */
+    footer{color:var(--muted);text-align:center;padding:24px}
+
+    /* Glow utility */
+    .glow:hover{box-shadow:0 0 18px rgba(124,58,237,.5), 0 0 40px rgba(6,182,212,.35)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand"><span class="dot"></span> Blessing • Author</div>
+      <nav class="menu">
+        <a href="#hero">Home</a>
+        <a href="#about">About</a>
+        <a href="#tips">Study Tips</a>
+        <a href="#books">Books</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#chat">Chat</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="tools">
+        <a class="btn ghost" href="tel:+2347061530797">Call</a>
+        <a class="btn primary glow" target="_blank" href="https://wa.me/2347061530797">WhatsApp</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section id="hero" class="hero">
+      <!-- floating books decoration -->
+      <svg class="books-deco" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
+        <!-- simple book icon: cover + pages -->
+        <g class="book-icon updown" transform="translate(80,60) scale(1.2)">
+          <rect x="0" y="0" width="60" height="40" rx="6" fill="url(#grad1)"></rect>
+          <path d="M5,5 h25 a8,8 0 0 1 8,8 v22 h-33z" fill="rgba(255,255,255,.25)"></path>
+        </g>
+        <g class="book-icon updown2" transform="translate(320,20) scale(0.9)">
+          <rect x="0" y="0" width="60" height="40" rx="6" fill="url(#grad2)"></rect>
+          <path d="M5,5 h25 a8,8 0 0 1 8,8 v22 h-33z" fill="rgba(255,255,255,.25)"></path>
+        </g>
+        <g class="book-icon updown" transform="translate(760,80) scale(1.1)">
+          <rect x="0" y="0" width="60" height="40" rx="6" fill="url(#grad1)"></rect>
+          <path d="M5,5 h25 a8,8 0 0 1 8,8 v22 h-33z" fill="rgba(255,255,255,.25)"></path>
+        </g>
+        <g class="book-icon updown2" transform="translate(1040,30) scale(1)">
+          <rect x="0" y="0" width="60" height="40" rx="6" fill="url(#grad2)"></rect>
+          <path d="M5,5 h25 a8,8 0 0 1 8,8 v22 h-33z" fill="rgba(255,255,255,.25)"></path>
+        </g>
+        <defs>
+          <linearGradient id="grad1" x1="0" x2="1">
+            <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#06b6d4"/>
+          </linearGradient>
+          <linearGradient id="grad2" x1="0" x2="1">
+            <stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div>
+        <div class="kicker">Writer • Student • Dreamer</div>
+        <div class="title">Turning words<br/> into worlds 🌍</div>
+        <p class="lead">Stories of survival, courage, betrayal, humor and love — crafted by Blessing for readers everywhere.</p>
+        <div class="actions">
+          <a class="btn primary glow" href="#books">Read my books</a>
+          <a class="btn ghost glow" href="#gallery">Open gallery</a>
+          <a class="btn ghost" href="#support">Support</a>
+        </div>
+
+        <div class="card students" style="margin-top:14px">
+          <div>
+            <!-- Inline SVG student reading (animated) -->
+            <svg class="svg-student" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" aria-label="Animated student reading">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#7c3aed"/>
+                  <stop offset="100%" stop-color="#06b6d4"/>
+                </linearGradient>
+              </defs>
+              <!-- table -->
+              <rect x="0" y="260" width="500" height="20" fill="rgba(255,255,255,.08)" />
+              <!-- book -->
+              <rect x="210" y="190" width="80" height="50" rx="6" fill="url(#g1)">
+                <animate attributeName="y" values="188;192;188" dur="3s" repeatCount="indefinite"/>
+              </rect>
+              <!-- head -->
+              <circle cx="250" cy="120" r="30" fill="#d1d5db">
+                <animate attributeName="cy" values="118;122;118" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <!-- body -->
+              <rect x="230" y="150" width="40" height="50" rx="8" fill="#a78bfa"/>
+              <!-- left hand -->
+              <rect x="200" y="170" width="30" height="10" rx="5" fill="#d1d5db">
+                <animate attributeName="x" values="198;202;198" dur="3s" repeatCount="indefinite"/>
+              </rect>
+              <!-- right hand -->
+              <rect x="270" y="170" width="30" height="10" rx="5" fill="#d1d5db">
+                <animate attributeName="x" values="272;268;272" dur="3s" repeatCount="indefinite"/>
+              </rect>
+
+              <!-- pencils drawing -->
+              <g>
+                <rect x="60" y="240" width="80" height="4" fill="#94a3b8">
+                  <animate attributeName="width" values="10;80;10" dur="5s" repeatCount="indefinite"/>
+                </rect>
+                <polygon points="145,242 155,242 150,250" fill="#f59e0b">
+                  <animate attributeName="points" values="145,242 155,242 150,250; 145,238 155,238 150,246; 145,242 155,242 150,250" dur="5s" repeatCount="indefinite"/>
+                </polygon>
+              </g>
+
+              <!-- floating stars -->
+              <g fill="#fde68a">
+                <circle cx="100" cy="60" r="3">
+                  <animate attributeName="cy" values="60;56;60" dur="6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="420" cy="40" r="2">
+                  <animate attributeName="cy" values="40;36;40" dur="5s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+            </svg>
+          </div>
+
+          <!-- MODERN SCHOOL GIFS -->
+          <div class="gif-grid">
+            <!-- Reading / note-taking -->
+            <img class="gif-student" alt="Study animation" src="https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif">
+            <!-- Laptop / workspace -->
+            <img class="gif-student" alt="Laptop study animation" src="https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif">
+          </div>
+
+          <div class="floaty">
+            <span style="left:10%;top:70%"></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-wrap">
+        <div class="profile glow">
+          <span class="halo"></span>
+          <!-- Your uploaded image filenames below -->
+          <img src="1000000297.jpg" alt="Blessing" onerror="this.src='1000001136.jpg'"/>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT / BIO -->
+    <section id="about" class="card">
+      <h2>About Blessing</h2>
+      <p class="small">Author • Storyteller • SS2 Economics Student</p>
+      <p>
+        <strong>Biography:</strong> Ibe Blessing Chinecherem — fondly called <em>Blesin</em> — is a stirring new voice in Nigerian literature. Her work blends raw honesty with bright hope, telling vivid stories of survival, courage, betrayal, humor, and first love. From village footpaths to the noise of the city, Blessing writes characters who are bold, flawed, and wonderfully human. As an SS2 student of Economics moving toward SS3, she balances school with a relentless creative drive. Her mission is simple: use stories to give people courage and company. Notable works include <em>Dear Diary, I Didn’t Die</em> and <em>From Garri to Glory</em>.
+      </p>
+      <div class="carousel card" style="margin-top:10px">
+        <div class="slides" id="slides">
+          <div class="quote">“Life is not about what breaks you, but what you rise above.”</div>
+          <div class="quote">“Stories are seeds — small words that grow into empathy.”</div>
+          <div class="quote">“We survive, then we sing.”</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDY TIPS -->
+    <section id="tips" class="card">
+      <h2>Study Tips 📚</h2>
+      <p class="small">Smart habits for SS2 → SS3 success.</p>
+      <div class="tips">
+        <div class="tip"><h4>Pomodoro Focus</h4><p>25 minutes deep work + 5 minutes break. Repeat 4×, then rest 20 minutes.</p></div>
+        <div class="tip"><h4>Active Recall</h4><p>Close your notes and explain the topic out loud. If you can teach it, you know it.</p></div>
+        <div class="tip"><h4>Spaced Repetition</h4><p>Review Day 1, 3, 7, 14. Short, regular revision beats cramming.</p></div>
+        <div class="tip"><h4>Past Questions</h4><p>Practice real exam formats weekly. Mark mistakes and fix the weak spots.</p></div>
+        <div class="tip"><h4>Healthy Routine</h4><p>Sleep 7–8h, drink water, and stretch. A fresh brain remembers more.</p></div>
+        <div class="tip"><h4>Accountability Buddy</h4><p>Read with a friend. Share goals and check in every evening.</p></div>
+      </div>
+    </section>
+
+    <!-- BOOKS + UPLOAD (LOCAL STORAGE) -->
+    <section id="books">
+      <h2>Books & Downloads</h2>
+      <div class="grid cols-3">
+        <div class="book">
+          <h3>Dear Diary, I Didn't Die</h3>
+          <p class="small">A coming-of-age tale about Nehnique — brave, funny, and unbreakable.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <a class="btn ghost glow" href="/pdfs/dear_diary_i_didnt_die.pdf" target="_blank">Read PDF</a>
+            <a class="btn primary glow" href="/pdfs/dear_diary_i_didnt_die.pdf" download>Download</a>
+          </div>
+        </div>
+        <div class="book">
+          <h3>From Garri to Glory</h3>
+          <p class="small">A powerful journey from small trade to big dreams.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <a class="btn ghost glow" href="/pdfs/from_garri_to_glory.pdf" target="_blank">Read PDF</a>
+            <a class="btn primary glow" href="/pdfs/from_garri_to_glory.pdf" download>Download</a>
+          </div>
+        </div>
+        <div class="book">
+          <h3>Upload new work</h3>
+          <p class="small">Local only (saved in this browser). Max ~2 MB per file.</p>
+          <input id="workTitle" type="text" placeholder="Title (e.g. My Poem)" style="margin:6px 0">
+          <input id="workFile" type="file" accept=".pdf,.txt,.docx" style="margin:6px 0">
+          <button class="btn primary glow" id="saveWork">Save to Library</button>
+          <div id="workMsg" class="small" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h3>Your Local Library</h3>
+        <div id="libraryList" class="small">No local items yet.</div>
+      </div>
+    </section>
+
+    <!-- GALLERY (LOCAL STORAGE IMAGES) -->
+    <section id="gallery" class="card">
+      <h2>Gallery</h2>
+      <p class="small">Upload pictures (saved to this browser). They appear below and persist on this device.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+        <input id="picCaption" type="text" placeholder="Caption (optional)" style="max-width:280px">
+        <input id="picFile" type="file" accept="image/*">
+        <button id="addPic" class="btn primary glow">Add picture</button>
+        <button id="clearPics" class="btn ghost" title="Remove all saved pictures">Clear all</button>
+      </div>
+      <div id="galleryGrid" class="gallery"></div>
+    </section>
+
+    <!-- CHAT (LOCAL ONLY) -->
+    <section id="chat" class="card">
+      <h2>Chat (This Device)</h2>
+      <p class="small">Local chat is stored in your browser. Open this page in another tab to chat across tabs on the same device.</p>
+      <div class="chatbox" id="chatBox"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="chatName" type="text" placeholder="Your name (optional)">
+        <input id="chatInput" type="text" placeholder="Type a message...">
+        <button id="sendMsg" class="btn primary glow">Send</button>
+        <button id="clearChat" class="btn ghost">Clear</button>
+      </div>
+    </section>
+
+    <!-- SUPPORT / CONTACT -->
+    <section id="support" class="card">
+      <h2>Support</h2>
+      <p class="small">Airtime (Nigeria): <strong>07061530797</strong>. You can also contact me for bank transfer or future card options.</p>
+    </section>
+
+    <section id="contact" class="card">
+      <h2>Contact</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn primary glow" href="https://wa.me/2347061530797" target="_blank">WhatsApp</a>
+        <a class="btn ghost" href="tel:+2347061530797">Call</a>
+        <a class="btn ghost" href="mailto:hello@example.com">Email</a>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="year"></span> Blessing — All rights reserved.
+    </footer>
+  </main>
+
+  <script>
+    // ===== Utilities =====
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => document.querySelectorAll(sel);
+    const kb = n => Math.round((n/1024)*10)/10;
+
+    // Year
+    $('#year').textContent = new Date().getFullYear();
+
+    // ===== Quotes carousel =====
+    let idx = 0; const slides = $('#slides');
+    setInterval(()=>{ idx=(idx+1)%3; slides.style.transform = `translateX(-${idx*100}%)`; }, 3500);
+
+    // ===== Local library (works) =====
+    const LIB_KEY = 'blesin_books_v1';
+    function getBooks(){ try{return JSON.parse(localStorage.getItem(LIB_KEY)||'[]')}catch(e){return []} }
+    function setBooks(list){ localStorage.setItem(LIB_KEY, JSON.stringify(list)); renderBooks(); }
+
+    async function fileToDataUrl(file){
+      return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); });
+    }
+
+    async function saveWork(){
+      const title = $('#workTitle').value.trim();
+      const file = $('#workFile').files[0];
+      const msg = $('#workMsg');
+      if(!file){ msg.textContent='Choose a file.'; return; }
+      if(file.size > 2*1024*1024){ msg.textContent = `File too large (${kb(file.size)} KB). Max 2048 KB for local storage.`; return; }
+      msg.textContent='Saving...';
+      const dataUrl = await fileToDataUrl(file);
+      const books = getBooks();
+      books.unshift({id:Date.now(), title: title || file.name, mime:file.type, size:file.size, dataUrl});
+      setBooks(books);
+      $('#workTitle').value=''; $('#workFile').value='';
+      msg.textContent='Saved locally. It will appear in Your Local Library.';
+    }
+    $('#saveWork').addEventListener('click', saveWork);
+
+    function renderBooks(){
+      const list = getBooks();
+      const wrap = $('#libraryList');
+      if(!list.length){ wrap.textContent='No local items yet.'; return; }
+      wrap.innerHTML='';
+      list.forEach(item=>{
+        const row = document.createElement('div');
+        row.style.margin = '6px 0';
+        const link = document.createElement('a');
+        link.href = item.dataUrl; link.download = (item.title||'download'); link.textContent = `⬇ ${item.title} (${kb(item.size)} KB)`;
+        link.className='btn ghost glow'; link.style.marginRight='8px';
+        const del = document.createElement('button'); del.className='btn ghost'; del.textContent='Delete';
+        del.onclick = ()=>{ setBooks(getBooks().filter(x=>x.id!==item.id)); };
+        row.append(link, del); wrap.append(row);
+      });
+    }
+    renderBooks();
+
+    // ===== Gallery (local images) =====
+    const GAL_KEY='blesin_gallery_v1';
+    function getPics(){ try{return JSON.parse(localStorage.getItem(GAL_KEY)||'[]')}catch(e){return []} }
+    function setPics(list){ localStorage.setItem(GAL_KEY, JSON.stringify(list)); renderPics(); }
+
+    async function addPicture(){
+      const file = $('#picFile').files[0];
+      const caption = $('#picCaption').value.trim();
+      if(!file){ alert('Choose an image'); return; }
+      if(!file.type.startsWith('image/')){ alert('Select an image file'); return; }
+      if(file.size>2*1024*1024){ alert('Max 2 MB for local storage'); return; }
+      const dataUrl = await fileToDataUrl(file);
+      const pics = getPics();
+      pics.unshift({id:Date.now(), caption, dataUrl, size:file.size});
+      setPics(pics); $('#picFile').value=''; $('#picCaption').value='';
+    }
+    function renderPics(){
+      const grid = $('#galleryGrid');
+      const list = getPics();
+      grid.innerHTML='';
+      list.forEach(p=>{
+        const card = document.createElement('div'); card.className='thumb';
+        const img = document.createElement('img'); img.src=p.dataUrl; img.alt=p.caption||'photo';
+        const btn = document.createElement('button'); btn.textContent='×'; btn.title='Remove';
+        btn.onclick=()=> setPics(getPics().filter(x=>x.id!==p.id));
+        card.append(img, btn); grid.append(card);
+      });
+    }
+    $('#addPic').addEventListener('click', addPicture);
+    $('#clearPics').addEventListener('click', ()=>{ if(confirm('Clear all saved pictures?')) setPics([]); });
+    renderPics();
+
+    // ===== Local chat (sync across tabs via storage events) =====
+    const CHAT_KEY='blesin_chat_v1';
+    function getChat(){ try{return JSON.parse(localStorage.getItem(CHAT_KEY)||'[]')}catch(e){return []} }
+    function setChat(list){ localStorage.setItem(CHAT_KEY, JSON.stringify(list)); renderChat(); }
+
+    function renderChat(){
+      const box=$('#chatBox'); box.innerHTML='';
+      getChat().forEach(m=>{
+        const div=document.createElement('div'); div.className='msg';
+        const who = m.name? `<span class="me">${escapeHtml(m.name)}</span>` : '<span class="you">Guest</span>';
+        div.innerHTML = `${who}: ${escapeHtml(m.text)} <span class="small" style="margin-left:6px;opacity:.7">${new Date(m.ts).toLocaleTimeString()}</span>`;
+        box.append(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+    function escapeHtml(s){return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+
+    $('#sendMsg').addEventListener('click', ()=>{
+      const name=$('#chatName').value.trim();
+      const text=$('#chatInput').value.trim(); if(!text) return;
+      const list=getChat(); list.push({name,text,ts:Date.now()}); setChat(list);
+      $('#chatInput').value='';
+    });
+    $('#clearChat').addEventListener('click', ()=>{ if(confirm('Clear chat on this device?')) setChat([]); });
+
+    window.addEventListener('storage', e=>{ if(e.key===CHAT_KEY||e.key===GAL_KEY||e.key===LIB_KEY){ renderChat(); renderPics(); renderBooks(); } });
+  </script>
+</body>
+</html>
