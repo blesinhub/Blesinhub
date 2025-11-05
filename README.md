@@ -12,7 +12,7 @@ welcome to my GitHub profile🥰🥰
  crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NTc0MTI3NzF8&ixlib=rb-4.1.0&q=85://img.shields.io/badge/Sponsor%20me-GitHub-blueviolet" alt="Sponsor Me">
   </a>
   <div align="center">
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Montserrat&weight=700&size=31&pause=1000&color=7B7B7B&width=435&lines=Hello+%2C+I'm+ibe+blessing;I'm+web+site+Developer;React+%2C+Next+%2C+TypeScript" alt="Typing SVG" /></a></div>
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Montserrat&weight=700&size=31&pause=1000&color=7B7B7B&width=435&lines=Hello+%2C+I'm+ibe+blessing;I'm+web+site+Developer;html+%2C+javascript+%2C+css" alt="Typing SVG" /></a></div>
 <br/>
   
   </a>
