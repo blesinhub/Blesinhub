@@ -1,5 +1,5 @@
 # Blessing1
-About my self 
+welcome to my GitHub profile🥰🥰
 <h1 align="center">Hi, I'm Blessing 👋</h1>
 <p align="center">
   <img src= width="200" style="border-radius: 10px;">
